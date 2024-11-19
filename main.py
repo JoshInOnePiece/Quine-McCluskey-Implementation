@@ -40,13 +40,16 @@ while readValue != ".e":
 
 minterms = []
 mintermBitLength = 0
-hammingWeight = [[]*1 for i in range(numberOfInput+1)]
+mintermsGrouped = [[]*1 for i in range(numberOfInput+1)]
 while readValue != ".e":
     readValue = f.readline()
     if readValue[len(readValue)-2] == "1":
-        minterms.append(readValue.split(None, 1)[0])
-        mintermBitLength = len(readValue.split(None, 1)[0])
-        print(readValue.split(None, 1)[0])
-        hammingValue = popcount_py(readValue.split(None, 1)[0])
-        print("Number of ones:" + str(hammingValue))
+        minterm = readValue.split(None, 1)[0]
+        minterms.append(minterm)
+        mintermBitLength = len(minterm)
+        print(minterm)
+        hammingWeight = popcount_py(minterm)
+        print("Number of ones:" + str(hammingWeight))
+        mintermsGrouped[hammingWeight].append(minterm)
+print(mintermsGrouped)
 f.close()
