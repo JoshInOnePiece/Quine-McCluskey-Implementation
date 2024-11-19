@@ -52,4 +52,10 @@ while readValue != ".e":
         print("Number of ones:" + str(hammingWeight))
         mintermsGrouped[hammingWeight].append(minterm)
 print(mintermsGrouped)
+
+for x in range(0,numberOfInput+1):
+    if(len(mintermsGrouped[x]) == 0):
+        continue
+    
+    
 f.close()
