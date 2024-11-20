@@ -6,7 +6,14 @@ def popcount_py(x):
 def diffByOne(str1, str2):
     if len(str1) != len(str2):
         return False
-    differingBits = sum(b1 != b2 for b1, b2 in zip(str1, str2))
+    differingBits = 0
+    for b1, b2 in zip(str1, str2):
+        if b1 == '-' and b2 != '-':
+            return False
+        if b1 != '-' and b2 == '-':
+            return False
+        if b1 != b2:
+            differingBits += 1
 
     return differingBits == 1
 
@@ -53,23 +60,23 @@ class QM:
     def createTable(self, list):
         """Takes a list of strings (int this case the inputTerms) and returns a 2D list of n lists, where list n has all strings with n # of 1's"""
         groupedByOnes = []
-        for numOnes in range(0, len(list[0]) + 1):
+        for numOnes in range(0, self.numInputs + 1):
             newList = [s for s in list if s.count("1") == numOnes]
             groupedByOnes.append(newList)
-        print(groupedByOnes)
+        #print(groupedByOnes)
         return groupedByOnes
 
     def createTablePairs(self, list):
         groupedByOnes = []
         # Extract only the strings from the pairs to determine the maximum count
-        max_ones = len(list[0][1])
+        max_ones = self.numInputs
 
         for numOnes in range(0, max_ones + 1):
             # Filter pairs based on the count of '1's in the string
             newList = [pair for pair in list if pair[1].count("1") == numOnes]
             groupedByOnes.append(newList)
 
-        print(groupedByOnes)
+        #print(groupedByOnes)
         return groupedByOnes
     
 
@@ -99,21 +106,43 @@ class QM:
                         combined = (pair,findDiff(currString, nextList[z]))
                         terms.append((combined))
 
-        print(terms)
+        #print(terms)
         return terms
 
-    def tabulateRecursive(self, list):
-        """takes list of (pair, term) pairs and tabulate them as far down as they can be done"""
-
-        newList = []
-        return self.tabulateRecursive(list)
+    def tabulatePair(self, list):
+        """takes list of (pair, term) pairs sorted into sublists based on number of 1s and tabulate them"""
+        terms = []
+        for x in range(0, len(list) - 1):#iterating over sublists, do not check last list
+            for y in range(0, len(list[x])):#iterating over string in sublist
+                # x[y] is now the current string being checked
+                currList = list[x]
+                currString = currList[y][1]
+                nextList = list[x+1]
+                
+                for z in range(0, len(nextList)):
+                    #print("curr " + currString)
+                    #print(nextList[z][1])
+                    if diffByOne(currString, nextList[z][1]):
+                        #print("diff")
+                        #pair = (int(currString, 2), int(nextList[z], 2))
+                        pair = currList[y][0] + nextList[z][0]
+                        combined = (pair,findDiff(currString, nextList[z][1]))
+                        terms.append((combined))
+        return terms
     
     def doQM(self):
         temp = self.createTable(self.inputTerms)
         termPairs = self.tabulate(temp)
         #pairs = [termPair[0] for termPair in termPairs]
         #terms = [termPair[1] for termPair in termPairs]
+        print("Term pairs")
+        print(termPairs)
         temp2 = self.createTablePairs(termPairs)
+        temp3 = self.tabulatePair(temp2)
+        print(temp3)
+        temp4 = self.createTablePairs(temp3)
+        temp5 = self.tabulatePair(temp4)
+        print(temp5)
 
 
 def main():
