@@ -69,16 +69,22 @@ class QM:
     def tabulate(self, list):
         """Perform the tabulate step on 'list', which should be a list of lists, where sublist in list at position n has all items with n 1's"""
         terms = []
+        pairFirst = 0
+        pairSecond = len(list[0])
         for x in range(0, len(list) - 1):#iterating over sublists, do not check last list
             for y in range(0, len(list[x])):#iterating over string in sublist
                 # x[y] is now the current string being checked
                 currList = list[x]
                 currString = currList[y]
                 nextList = list[x+1]
+                
                 for z in range(0, len(nextList)):
                     if diffByOne(currString, nextList[z]):
-                        combined = findDiff(currString, nextList[z])
+                        pair = (pairFirst, pairSecond)
+                        combined = (pair,findDiff(currString, nextList[z]))
                         terms.append((combined))
+                    pairSecond += 1
+                pairFirst += 1
         print(terms)
         return terms
 
