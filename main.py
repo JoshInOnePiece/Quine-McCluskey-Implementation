@@ -14,19 +14,22 @@ def findDiff(str1, str2):
     combined = ''.join(b1 if b1 == b2 else '-' for b1, b2 in zip(str1, str2))
     return combined
 
+
+
 class QM:
-    def __init__(self):
+    def __init__(self, path):
         self.inputNames = []
         self.outputNames = []
         self.inputTerms = []
         self.outputTerms = []
         self.numInputs = 0
+        self.file = path
 
 
-    def parsePLA(self, path):
+    def parsePLA(self):
         """Parses the file at path and populates the QM with the names of the inputs, names of
         the outputs, the input terms, and the output terms. Also saves number of inputs."""
-        with open(path, 'r') as f:
+        with open(self.file, 'r') as f:
             lines = f.readlines()
         
         numInputs = int(next(line.split()[1] for line in lines if line.startswith('.i ')))
@@ -47,14 +50,28 @@ class QM:
             self.inputTerms.append(inputTerm)
             self.outputTerms.append(outputTerm)
     
-    def createTable(self):
+    def createTable(self, list):
         """Takes a list of strings (int this case the inputTerms) and returns a 2D list of n lists, where list n has all strings with n # of 1's"""
         groupedByOnes = []
-        for numOnes in range(0, self.numInputs + 1):
-            newList = [s for s in self.inputTerms if s.count("1") == numOnes]
+        for numOnes in range(0, len(list[0]) + 1):
+            newList = [s for s in list if s.count("1") == numOnes]
             groupedByOnes.append(newList)
         print(groupedByOnes)
         return groupedByOnes
+
+    def createTablePairs(self, list):
+        groupedByOnes = []
+        # Extract only the strings from the pairs to determine the maximum count
+        max_ones = len(list[0][1])
+
+        for numOnes in range(0, max_ones + 1):
+            # Filter pairs based on the count of '1's in the string
+            newList = [pair for pair in list if pair[1].count("1") == numOnes]
+            groupedByOnes.append(newList)
+
+        print(groupedByOnes)
+        return groupedByOnes
+    
 
     def printData(self):
         print("Input Labels: ")
@@ -69,8 +86,6 @@ class QM:
     def tabulate(self, list):
         """Perform the tabulate step on 'list', which should be a list of lists, where sublist in list at position n has all items with n 1's"""
         terms = []
-        pairFirst = 0
-        pairSecond = len(list[0])
         for x in range(0, len(list) - 1):#iterating over sublists, do not check last list
             for y in range(0, len(list[x])):#iterating over string in sublist
                 # x[y] is now the current string being checked
@@ -80,23 +95,32 @@ class QM:
                 
                 for z in range(0, len(nextList)):
                     if diffByOne(currString, nextList[z]):
-                        pair = (pairFirst, pairSecond)
+                        pair = (int(currString, 2), int(nextList[z], 2))
                         combined = (pair,findDiff(currString, nextList[z]))
                         terms.append((combined))
-                    pairSecond += 1
-                pairFirst += 1
+
         print(terms)
         return terms
 
+    def tabulateRecursive(self, list):
+        """takes list of (pair, term) pairs and tabulate them as far down as they can be done"""
+
+        newList = []
+        return self.tabulateRecursive(list)
+    
+    def doQM(self):
+        temp = self.createTable(self.inputTerms)
+        termPairs = self.tabulate(temp)
+        #pairs = [termPair[0] for termPair in termPairs]
+        #terms = [termPair[1] for termPair in termPairs]
+        temp2 = self.createTablePairs(termPairs)
 
 
 def main():
 
-    qm = QM()
-    qm.parsePLA('adder.pla')
-    qm.printData()
-    temp = qm.createTable()
-    qm.tabulate(temp)
+    qm = QM('adder.pla')
+    qm.parsePLA()
+    qm.doQM()
 
 if __name__ == "__main__":
     main()
