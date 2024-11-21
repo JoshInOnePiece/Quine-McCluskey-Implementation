@@ -31,6 +31,7 @@ class QM:
         self.outputTerms = []
         self.numInputs = 0
         self.file = path
+        self.unUsedTerms = set()
 
 
     def parsePLA(self):
@@ -93,25 +94,32 @@ class QM:
     def tabulate(self, list):
         """Perform the tabulate step on 'list', which should be a list of lists, where sublist in list at position n has all items with n 1's"""
         terms = []
+        usedTerms = set()
         for x in range(0, len(list) - 1):#iterating over sublists, do not check last list
             for y in range(0, len(list[x])):#iterating over string in sublist
                 # x[y] is now the current string being checked
                 currList = list[x]
                 currString = currList[y]
                 nextList = list[x+1]
-                
                 for z in range(0, len(nextList)):
                     if diffByOne(currString, nextList[z]):
+                        usedTerms.add(currString)
+                        usedTerms.add(nextList[z])
                         pair = (int(currString, 2), int(nextList[z], 2))
                         combined = (pair,findDiff(currString, nextList[z]))
                         terms.append((combined))
-
+                if currString in usedTerms:
+                    continue
+                else:
+                    self.unUsedTerms.add(currString)
+        print(self.unUsedTerms)
         #print(terms)
         return terms
 
     def tabulatePair(self, list):
         """takes list of (pair, term) pairs sorted into sublists based on number of 1s and tabulate them"""
         terms = []
+        usedTerms = set()
         for x in range(0, len(list) - 1):#iterating over sublists, do not check last list
             for y in range(0, len(list[x])):#iterating over string in sublist
                 # x[y] is now the current string being checked
@@ -127,7 +135,14 @@ class QM:
                         #pair = (int(currString, 2), int(nextList[z], 2))
                         pair = currList[y][0] + nextList[z][0]
                         combined = (pair,findDiff(currString, nextList[z][1]))
+                        usedTerms.add(currString)
+                        usedTerms.add(nextList[z][1])
                         terms.append((combined))
+                if currString in usedTerms:
+                    continue
+                else:
+                    self.unUsedTerms.add(currString)
+        print(self.unUsedTerms)
         return terms
     
     def doQM(self):
@@ -136,13 +151,15 @@ class QM:
         #pairs = [termPair[0] for termPair in termPairs]
         #terms = [termPair[1] for termPair in termPairs]
         print("Term pairs")
-        print(termPairs)
+        #print(termPairs)
         temp2 = self.createTablePairs(termPairs)
         temp3 = self.tabulatePair(temp2)
-        print(temp3)
+        #print(temp3)
         temp4 = self.createTablePairs(temp3)
         temp5 = self.tabulatePair(temp4)
-        print(temp5)
+        temp6 = self.createTablePairs(temp5)
+        temp7 = self.tabulatePair(temp6)
+        #print(temp5)
 
 
 def main():
