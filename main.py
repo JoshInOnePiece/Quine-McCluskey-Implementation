@@ -168,14 +168,15 @@ class QM:
         possibleRepresentation = []
         for minterm in self.onsetTerms:
             possibleRepresentation.clear()
+            implicantTable[minterm] = []
             for implicant in self.unUsedTerms:
-                print(minterm,implicant)
                 valid = validImplicant(minterm,implicant)
-                print(valid)
                 if(valid):
+                    print(minterm,implicant, end=" ")
+                    print(valid)
                     possibleRepresentation.append(implicant)
             print(possibleRepresentation)
-            implicantTable[minterm] = possibleRepresentation
+            implicantTable[minterm] += possibleRepresentation
         return implicantTable
 
     def doQM(self):
