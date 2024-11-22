@@ -32,6 +32,7 @@ class QM:
         self.numInputs = 0
         self.file = path
         self.unUsedTerms = set()
+        self.keepGoing = False
 
 
     def parsePLA(self):
@@ -95,6 +96,7 @@ class QM:
         """Perform the tabulate step on 'list', which should be a list of lists, where sublist in list at position n has all items with n 1's"""
         terms = []
         usedTerms = set()
+        self.keepGoing = False
         for x in range(0, len(list) - 1):#iterating over sublists, do not check last list
             for y in range(0, len(list[x])):#iterating over string in sublist
                 # x[y] is now the current string being checked
@@ -103,6 +105,7 @@ class QM:
                 nextList = list[x+1]
                 for z in range(0, len(nextList)):
                     if diffByOne(currString, nextList[z]):
+                        self.keepGoing = True
                         usedTerms.add(currString)
                         usedTerms.add(nextList[z])
                         pair = (int(currString, 2), int(nextList[z], 2))
@@ -120,6 +123,7 @@ class QM:
         """takes list of (pair, term) pairs sorted into sublists based on number of 1s and tabulate them"""
         terms = []
         usedTerms = set()
+        self.keepGoing = False
         for x in range(0, len(list) - 1):#iterating over sublists, do not check last list
             for y in range(0, len(list[x])):#iterating over string in sublist
                 # x[y] is now the current string being checked
@@ -133,6 +137,7 @@ class QM:
                     if diffByOne(currString, nextList[z][1]):
                         #print("diff")
                         #pair = (int(currString, 2), int(nextList[z], 2))
+                        self.keepGoing = True
                         pair = currList[y][0] + nextList[z][0]
                         combined = (pair,findDiff(currString, nextList[z][1]))
                         usedTerms.add(currString)
@@ -146,22 +151,25 @@ class QM:
         return terms
     
     def doQM(self):
-        temp = self.createTable(self.inputTerms)
-        termPairs = self.tabulate(temp)
+        terms = self.createTable(self.inputTerms)
+        termPairs = self.tabulate(terms)
+        while True:
+            terms = self.createTablePairs(termPairs)
+            termPairs = self.tabulatePair(terms)
+            if self.keepGoing == False:
+                break
         #pairs = [termPair[0] for termPair in termPairs]
         #terms = [termPair[1] for termPair in termPairs]
-        print("Term pairs")
-        #print(termPairs)
-        temp2 = self.createTablePairs(termPairs)
-        temp3 = self.tabulatePair(temp2)
-        #print(temp3)
-        temp4 = self.createTablePairs(temp3)
-        temp5 = self.tabulatePair(temp4)
-        temp6 = self.createTablePairs(temp5)
-        temp7 = self.tabulatePair(temp6)
+        # print("Term pairs")
+        # #print(termPairs)
+        # temp2 = self.createTablePairs(termPairs)
+        # temp3 = self.tabulatePair(temp2)
+        # #print(temp3)
+        # temp4 = self.createTablePairs(temp3)
+        # temp5 = self.tabulatePair(temp4)
+        # temp6 = self.createTablePairs(temp5)
+        # temp7 = self.tabulatePair(temp6)
         #print(temp5)
-
-
 def main():
 
     qm = QM('adder.pla')
