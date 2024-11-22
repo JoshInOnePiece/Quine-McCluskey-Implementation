@@ -21,13 +21,23 @@ def findDiff(str1, str2):
     combined = ''.join(b1 if b1 == b2 else '-' for b1, b2 in zip(str1, str2))
     return combined
 
-
+# This checks if implicant represents specified minterm
+def validImplicant(str1,str2):
+    if len(str1) != len(str2):
+        return False
+    for b1, b2 in zip(str1, str2):
+        if b1 == '-' or b2 != '-':
+            continue
+        if b1 != b2:
+            return False
+    return True
 
 class QM:
     def __init__(self, path):
         self.inputNames = []
         self.outputNames = []
         self.inputTerms = []
+        self.onsetTerms = []
         self.outputTerms = []
         self.numInputs = 0
         self.file = path
@@ -56,6 +66,8 @@ class QM:
         for line in terms:
             inputTerm = line[0]
             outputTerm = line[1]
+            if outputTerm == '1':
+                self.onsetTerms.append(inputTerm)
             self.inputTerms.append(inputTerm)
             self.outputTerms.append(outputTerm)
     
@@ -150,14 +162,20 @@ class QM:
         print(self.unUsedTerms)
         return terms
     
+    def createImplicantTable(self):
+        implicantTable = {}
+
+        return
     def doQM(self):
         terms = self.createTable(self.inputTerms)
         termPairs = self.tabulate(terms)
+        print(self.onsetTerms)
         while True:
             terms = self.createTablePairs(termPairs)
             termPairs = self.tabulatePair(terms)
             if self.keepGoing == False:
                 break
+
         #pairs = [termPair[0] for termPair in termPairs]
         #terms = [termPair[1] for termPair in termPairs]
         # print("Term pairs")
@@ -172,7 +190,7 @@ class QM:
         #print(temp5)
 def main():
 
-    qm = QM('adder.pla')
+    qm = QM('homework1q3.pla')
     qm.parsePLA()
     qm.doQM()
 

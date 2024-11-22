@@ -15,3 +15,7 @@ print(bin(4))
 print(bin(16))
 print(bin(24))
 print(bin(25))
+
+di = {}
+di[12] = '01110'
+print(di)
