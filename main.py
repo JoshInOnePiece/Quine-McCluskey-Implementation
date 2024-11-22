@@ -164,8 +164,14 @@ class QM:
     
     def createImplicantTable(self):
         implicantTable = {}
+        for minterm in self.onsetTerms:
+            possibleRepresentation = []
+            for implicant in self.unUsedTerms:
+                if(validImplicant(minterm,implicant)):
+                    possibleRepresentation.append(implicant)
+        implicantTable[minterm] = possibleRepresentation
+        return implicantTable
 
-        return
     def doQM(self):
         terms = self.createTable(self.inputTerms)
         termPairs = self.tabulate(terms)
