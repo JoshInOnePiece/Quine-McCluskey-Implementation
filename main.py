@@ -26,7 +26,8 @@ def validImplicant(str1,str2):
     if len(str1) != len(str2):
         return False
     for b1, b2 in zip(str1, str2):
-        if b1 == '-' or b2 != '-':
+        #print(b1,b2)
+        if b1 == '-' or b2 == '-':
             continue
         if b1 != b2:
             return False
@@ -164,12 +165,17 @@ class QM:
     
     def createImplicantTable(self):
         implicantTable = {}
+        possibleRepresentation = []
         for minterm in self.onsetTerms:
-            possibleRepresentation = []
+            possibleRepresentation.clear()
             for implicant in self.unUsedTerms:
-                if(validImplicant(minterm,implicant)):
+                print(minterm,implicant)
+                valid = validImplicant(minterm,implicant)
+                print(valid)
+                if(valid):
                     possibleRepresentation.append(implicant)
-        implicantTable[minterm] = possibleRepresentation
+            print(possibleRepresentation)
+            implicantTable[minterm] = possibleRepresentation
         return implicantTable
 
     def doQM(self):
@@ -181,6 +187,8 @@ class QM:
             termPairs = self.tabulatePair(terms)
             if self.keepGoing == False:
                 break
+        implicantTable = self.createImplicantTable()
+        print(implicantTable)
 
         #pairs = [termPair[0] for termPair in termPairs]
         #terms = [termPair[1] for termPair in termPairs]
