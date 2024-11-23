@@ -165,19 +165,38 @@ class QM:
     
     def createImplicantTable(self):
         implicantTable = {}
-        possibleRepresentation = []
+        implicantsForEachMinterm = []
         for minterm in self.onsetTerms:
-            possibleRepresentation.clear()
+            implicantsForEachMinterm.clear()
             implicantTable[minterm] = []
             for implicant in self.unUsedTerms:
-                valid = validImplicant(minterm,implicant)
-                if(valid):
-                    print(minterm,implicant, end=" ")
-                    print(valid)
-                    possibleRepresentation.append(implicant)
-            print(possibleRepresentation)
-            implicantTable[minterm] += possibleRepresentation
+                #valid = validImplicant(minterm,implicant)
+                if(validImplicant(minterm,implicant)):
+                    # print(minterm,implicant, end=" ")
+                    # print(valid)
+                    implicantsForEachMinterm.append(implicant)
+            # print(implicantsForEachMinterm)
+            implicantTable[minterm] += implicantsForEachMinterm
         return implicantTable
+    
+    def createImplicantToMintermTable(self):
+        implicantTable = {}
+        mintermForImplicant = []
+        for implicant in self.unUsedTerms:
+            mintermForImplicant.clear()
+            implicantTable[implicant] = []
+            for minterm in self.onsetTerms:
+                #valid = validImplicant(minterm,implicant)
+                if(validImplicant(implicant,minterm)):
+                    # print(minterm,implicant, end=" ")
+                    # print(valid)
+                    mintermForImplicant.append(minterm)
+            # print(mintermForImplicant)
+            implicantTable[implicant] += mintermForImplicant
+        return implicantTable
+    
+    def choosingMinterms(self, implicantTable):
+        return
 
     def doQM(self):
         terms = self.createTable(self.inputTerms)
@@ -190,6 +209,9 @@ class QM:
                 break
         implicantTable = self.createImplicantTable()
         print(implicantTable)
+        mintermToImplicantTable = self.createImplicantToMintermTable()
+        print("Minterms for each implicant")
+        print(mintermToImplicantTable)
 
         #pairs = [termPair[0] for termPair in termPairs]
         #terms = [termPair[1] for termPair in termPairs]
