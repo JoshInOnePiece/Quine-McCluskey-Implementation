@@ -43,7 +43,10 @@ class QM:
         self.numInputs = 0
         self.file = path
         self.unUsedTerms = set()
+        self.implicantTable = {}
+        self.implicantToMintermTable = {}
         self.keepGoing = False
+        self.chosenImplicants = []
 
 
     def parsePLA(self):
@@ -195,7 +198,29 @@ class QM:
             implicantTable[implicant] += mintermForImplicant
         return implicantTable
     
-    def choosingMinterms(self, implicantTable):
+    def findingEssentialPrimeImplicants(self):
+        chosenImplicants = []
+        i = 1
+        for minterms in self.onsetTerms:
+            print(i)
+            if minterms in chosenImplicants:
+                continue
+            print(minterms, len(self.implicantTable.get(minterms)))
+            # Case if only one implicant represents a minterm
+            if len(self.implicantTable.get(minterms)) == 1:
+                chosenImplicant = self.implicantTable.get(minterms, "Not Found")[0]
+                self.chosenImplicants.append(chosenImplicant) # Save implicant 
+                #del self.implicantTable[minterms] # Since implicant that represents minterm is found, we don't need minterm
+                mintermsRepresentedByImplicant = self.implicantToMintermTable.get(chosenImplicant) # Finds minterms represented by chosen implicant
+                for sharedMinterms in mintermsRepresentedByImplicant:
+                    if sharedMinterms in chosenImplicants:
+                        continue
+                    del self.implicantTable[sharedMinterms] # Since chosen implicate represents multiple minterms, we do not needs to find the implicant for those minterms. Thus, we delet from dictionary
+                    chosenImplicants.append(sharedMinterms)
+                del self.implicantToMintermTable[chosenImplicant] # Delete chosen implicant from table
+                #print(self.implicantTable)
+                #print(self.implicantToMintermTable)
+                i = i+1
         return
 
     def doQM(self):
@@ -207,11 +232,14 @@ class QM:
             termPairs = self.tabulatePair(terms)
             if self.keepGoing == False:
                 break
-        implicantTable = self.createImplicantTable()
-        print(implicantTable)
-        mintermToImplicantTable = self.createImplicantToMintermTable()
+        self.implicantTable = self.createImplicantTable()
+        print(self.implicantTable)
+        self.implicantToMintermTable = self.createImplicantToMintermTable()
         print("Minterms for each implicant")
-        print(mintermToImplicantTable)
+        print(self.implicantToMintermTable)
+        self.findingEssentialPrimeImplicants()
+        print("Chosen implicants")
+        print(self.chosenImplicants)
 
         #pairs = [termPair[0] for termPair in termPairs]
         #terms = [termPair[1] for termPair in termPairs]
