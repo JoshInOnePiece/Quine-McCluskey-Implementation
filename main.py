@@ -198,29 +198,54 @@ class QM:
             implicantTable[implicant] += mintermForImplicant
         return implicantTable
     
+    def updateMintermsToImplicantTable(self,minterm,listOfImplicants):
+
+        for implicants in listOfImplicants:
+            # print("Shared Minterm", minterm)
+            # print("Implicant", implicants, "Minterms: ", self.implicantToMintermTable.get(implicants))
+            self.implicantToMintermTable.get(implicants).remove(minterm)
+            continue
+        return
     def findingEssentialPrimeImplicants(self):
-        chosenImplicants = []
-        i = 1
+        usedMinterms = []
+        usedImplicants = []
         for minterms in self.onsetTerms:
-            print(i)
-            if minterms in chosenImplicants:
+            if minterms in usedMinterms:
                 continue
             print(minterms, len(self.implicantTable.get(minterms)))
             # Case if only one implicant represents a minterm
             if len(self.implicantTable.get(minterms)) == 1:
+                print("Before")
+                print(self.implicantTable)
+                print(self.implicantToMintermTable)
                 chosenImplicant = self.implicantTable.get(minterms, "Not Found")[0]
                 self.chosenImplicants.append(chosenImplicant) # Save implicant 
-                #del self.implicantTable[minterms] # Since implicant that represents minterm is found, we don't need minterm
                 mintermsRepresentedByImplicant = self.implicantToMintermTable.get(chosenImplicant) # Finds minterms represented by chosen implicant
+                
                 for sharedMinterms in mintermsRepresentedByImplicant:
-                    if sharedMinterms in chosenImplicants:
+                    if sharedMinterms in usedMinterms:
                         continue
+                    otherImplicantsForMinterm = self.implicantTable.get(sharedMinterms)
+                    self.updateMintermsToImplicantTable(sharedMinterms,otherImplicantsForMinterm)
                     del self.implicantTable[sharedMinterms] # Since chosen implicate represents multiple minterms, we do not needs to find the implicant for those minterms. Thus, we delet from dictionary
-                    chosenImplicants.append(sharedMinterms)
+                    usedMinterms.append(sharedMinterms)
+                del self.implicantTable[minterms]
                 del self.implicantToMintermTable[chosenImplicant] # Delete chosen implicant from table
-                #print(self.implicantTable)
-                #print(self.implicantToMintermTable)
-                i = i+1
+                usedMinterms.append(minterms)
+                print("After, Used Minterms: ", usedMinterms)
+                print(self.implicantTable)
+                print(self.implicantToMintermTable)
+        return
+    def columnDomination(self):
+        keyList = list(self.implicantTable)
+        first_val = list(self.implicantTable.values())[0]
+        numberOfKeys = len(self.implicantTable)
+        for x in range(0, numberOfKeys-1):
+            currMinterms = list(self.implicantTable.values())[x]
+            nextMinterms = list(self.implicantTable.values())[x+1]
+
+            continue
+        print(first_val)
         return
 
     def doQM(self):
@@ -240,6 +265,10 @@ class QM:
         self.findingEssentialPrimeImplicants()
         print("Chosen implicants")
         print(self.chosenImplicants)
+        print(self.implicantTable)
+        print(self.implicantToMintermTable)
+        #self.columnDomination()
+
 
         #pairs = [termPair[0] for termPair in termPairs]
         #terms = [termPair[1] for termPair in termPairs]
