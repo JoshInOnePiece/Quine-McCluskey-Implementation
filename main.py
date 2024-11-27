@@ -243,6 +243,9 @@ class QM:
             print(i)
             if minterms in chosenImplicants:
                 continue
+            if minterms not in self.implicantTable.keys():
+                continue
+            print(minterms)
             print(minterms, len(self.implicantTable.get(minterms)))
             # Case if only one implicant represents a minterm
             if len(self.implicantTable.get(minterms)) == 1:
@@ -286,6 +289,34 @@ class QM:
                     del self.implicantToMintermTable[key2]
                     didColumnDominate = True
         self.remakeImplicantTable()
+        return didColumnDominate
+    
+    def findRowDomination(self):
+        didRowDominate = False
+        mintermList = []
+        for key in self.implicantTable:
+            mintermList.append(key)
+        print("Minterm List ", mintermList)
+        for key1 in mintermList:
+            for key2 in mintermList:
+                if key1 == None or key2 == None:
+                    continue
+                # print(key1, key2)
+                # print(self.implicantToMintermTable.get(key1),self.implicantToMintermTable.get(key2))
+                if self.implicantTable.get(key1) == None or self.implicantTable.get(key2) == None:
+                    continue
+                if self.implicantTable.get(key1) == self.implicantTable.get(key2):
+                    continue
+                if set(self.implicantTable.get(key1)).issubset(set(self.implicantTable.get(key2))):
+                    # print("Key1 is subset of key2")
+                    del self.implicantTable[key1]
+                    didRowDominate = True
+                elif set(self.implicantTable.get(key2)).issubset(set(self.implicantTable.get(key1))):
+                    # print("Key2 is subset of key1")
+                    del self.implicantTable[key2]
+                    didRowDominate = True
+        self.remakeImplicantTable()
+        return didRowDominate
         
     def doQM(self):
         terms = self.createTable(self.inputTerms)
@@ -299,19 +330,30 @@ class QM:
         self.implicantTable = self.createImplicantTable()
         print(self.implicantTable)
         self.implicantToMintermTable = self.createImplicantToMintermTable()
-        print("Minterms for each implicant")
-        print(self.implicantToMintermTable)
-        self.findingEssentialPrimeImplicants()
-        print("Chosen implicants")
+
+        while True: 
+            continueQM = False
+            print("Minterms for each implicant")
+            print(self.implicantToMintermTable)
+            self.findingEssentialPrimeImplicants()
+            print("Chosen implicants")
+            print(self.chosenImplicants)
+            print(self.implicantTable)
+            print("Remade Table")
+            remadeTable = self.remakeTable()
+            print(remadeTable)
+            print("Starting Column Domination")
+            hasColumnDomination = self.findColumnDomination()
+            print("Implicant Table: ",self.implicantTable)
+            print("Implicant to minterm table: ", self.implicantToMintermTable)
+            print("Starting Row Domination")
+            hasRowDomination = self.findRowDomination()
+            print("Implicant Table: ",self.implicantTable)
+            print("Implicant to minterm table: ", self.implicantToMintermTable)
+            if hasColumnDomination == False and hasRowDomination == False:
+                break
+        print("\n\nFinal Chosen Implicants: ")
         print(self.chosenImplicants)
-        print(self.implicantTable)
-        print("Remade Table")
-        remadeTable = self.remakeTable()
-        print(remadeTable)
-        print("Starting Column Domination")
-        self.findColumnDomination()
-        print("Implicant Table: ",self.implicantTable)
-        print("Implicant to minterm table: ", self.implicantToMintermTable)
 
         #pairs = [termPair[0] for termPair in termPairs]
         #terms = [termPair[1] for termPair in termPairs]
@@ -327,7 +369,7 @@ class QM:
         #print(temp5)
 def main():
 
-    qm = QM('onlineExample1.pla')
+    qm = QM('homework1q3.pla')
     qm.parsePLA()
     qm.doQM()
 
