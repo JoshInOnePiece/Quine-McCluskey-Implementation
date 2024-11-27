@@ -1,6 +1,8 @@
 import re
 from collections import defaultdict
 import sys
+from itertools import combinations
+import copy
 def popcount_py(x):
     return x.count("1")
 
@@ -410,6 +412,25 @@ class QM:
     def getNumTerms(self):
         return len(self.chosenImplicants)
 
+def findBestQMTerms(filename):
+    qm = QM(filename)
+    qm.parsePLA()
+    terms = []
+    onSet = qm.onsetTerms
+    dcSet = qm.dontCareTerms
+    combinationsDC = []
+    for r in range(len(dcSet) + 1):  # r is the length of each combination
+        combinationsDC.extend(combinations(dcSet, r))
+    print(combinationsDC)
+    numberOfTermsPerCombination = []
+    for termsToAdd in combinationsDC:
+        combined = onSet + termsToAdd
+        qmCopy = copy.copy(qm)
+        results = qmCopy.doQM(combined)
+        numberOfTermsPerCombination.append(len(results))
+
+
+
 
 def main():
     n = len(sys.argv)
@@ -418,6 +439,9 @@ def main():
         sys.exit(1)
     input = sys.argv[1]
     output = sys.argv[2]
+
+    findBestQMTerms(input)
+
     qm = QM(input)
     qm.parsePLA()
     #qm.printData()
