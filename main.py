@@ -1,5 +1,6 @@
 import re
 from collections import defaultdict
+import sys
 def popcount_py(x):
     return x.count("1")
 
@@ -26,7 +27,7 @@ def validImplicant(str1,str2):
     if len(str1) != len(str2):
         return False
     for b1, b2 in zip(str1, str2):
-        #print(b1,b2)
+        ##print(b1,b2)
         if b1 == '-' or b2 == '-':
             continue
         if b1 != b2:
@@ -41,6 +42,7 @@ class QM:
         self.onsetTerms = []
         self.outputTerms = []
         self.numInputs = 0
+        self.numOutputs = 0
         self.file = path
         self.unUsedTerms = set()
         self.implicantTable = {}
@@ -66,14 +68,14 @@ class QM:
         self.inputNames = inputLabels
         self.numInputs = len(inputLabels)
         self.outputNames = outputLabels
-
+        self.numOutputs = len(outputLabels)
         terms = [line.strip().split() for line in lines if re.match(r'^[01-]+\s+[01-]+$', line)]
 
 
         for line in terms:
             inputTerm = line[0]
             outputTerm = line[1]
-            if outputTerm == '1':
+            if outputTerm == '1' or outputTerm =='-':
                 self.onsetTerms.append(inputTerm)
                 self.termsDecimal.append(int(inputTerm, 2))
             self.inputTerms.append(inputTerm)
@@ -85,7 +87,7 @@ class QM:
         for numOnes in range(0, self.numInputs + 1):
             newList = [s for s in list if s.count("1") == numOnes]
             groupedByOnes.append(newList)
-        #print(groupedByOnes)
+        ##print(groupedByOnes)
         return groupedByOnes
 
     def createTablePairs(self, list):
@@ -98,7 +100,7 @@ class QM:
             newList = [pair for pair in list if pair[1].count("1") == numOnes]
             groupedByOnes.append(newList)
 
-        #print(groupedByOnes)
+        ##print(groupedByOnes)
         return groupedByOnes
     
 
@@ -137,8 +139,8 @@ class QM:
                     continue
                 else:
                     self.unUsedTerms.add(currString)
-        print(self.unUsedTerms)
-        #print(terms)
+        #print(self.unUsedTerms)
+        ##print(terms)
         return terms
 
     def tabulatePair(self, list):
@@ -154,10 +156,10 @@ class QM:
                 nextList = list[x+1]
                 
                 for z in range(0, len(nextList)):
-                    #print("curr " + currString)
-                    #print(nextList[z][1])
+                    ##print("curr " + currString)
+                    ##print(nextList[z][1])
                     if diffByOne(currString, nextList[z][1]):
-                        #print("diff")
+                        ##print("diff")
                         #pair = (int(currString, 2), int(nextList[z], 2))
                         self.keepGoing = True
                         pair = currList[y][0] + nextList[z][0]
@@ -169,7 +171,7 @@ class QM:
                     continue
                 else:
                     self.unUsedTerms.add(currString)
-        print(self.unUsedTerms)
+        #print(self.unUsedTerms)
         return terms
     
     def createImplicantTable(self):
@@ -181,10 +183,10 @@ class QM:
             for implicant in self.unUsedTerms:
                 #valid = validImplicant(minterm,implicant)
                 if(validImplicant(minterm,implicant)):
-                    # print(minterm,implicant, end=" ")
-                    # print(valid)
+                    # #print(minterm,implicant, end=" ")
+                    # #print(valid)
                     implicantsForEachMinterm.append(implicant)
-            # print(implicantsForEachMinterm)
+            # #print(implicantsForEachMinterm)
             implicantTable[minterm] += implicantsForEachMinterm
         return implicantTable
     
@@ -197,10 +199,10 @@ class QM:
             for minterm in self.onsetTerms:
                 #valid = validImplicant(minterm,implicant)
                 if(validImplicant(implicant,minterm)):
-                    # print(minterm,implicant, end=" ")
-                    # print(valid)
+                    # #print(minterm,implicant, end=" ")
+                    # #print(valid)
                     mintermForImplicant.append(minterm)
-            # print(mintermForImplicant)
+            # #print(mintermForImplicant)
             implicantTable[implicant] += mintermForImplicant
         return implicantTable
     
@@ -219,7 +221,7 @@ class QM:
                     mintermList.append(minterm)
             remadeTable[implicant] += mintermList
                     
-        print("Implicant List", implicantList)
+        #print("Implicant List", implicantList)
         self.implicantToMintermTable = remadeTable
         return remadeTable
     
@@ -238,7 +240,7 @@ class QM:
                     implicantList.append(implicant)
             remadeTable[minterm] += implicantList
                     
-        print("Minterm List", mintermList)
+        #print("Minterm List", mintermList)
         self.implicantTable = remadeTable
         return remadeTable
 
@@ -246,13 +248,13 @@ class QM:
         chosenImplicants = []
         i = 1
         for minterms in self.onsetTerms:
-            print(i)
+            #print(i)
             if minterms in chosenImplicants:
                 continue
             if minterms not in self.implicantTable.keys():
                 continue
-            print(minterms)
-            print(minterms, len(self.implicantTable.get(minterms)))
+            #print(minterms)
+            #print(minterms, len(self.implicantTable.get(minterms)))
             # Case if only one implicant represents a minterm
             if len(self.implicantTable.get(minterms)) == 1:
                 chosenImplicant = self.implicantTable.get(minterms, "Not Found")[0]
@@ -265,8 +267,8 @@ class QM:
                     del self.implicantTable[sharedMinterms] # Since chosen implicate represents multiple minterms, we do not needs to find the implicant for those minterms. Thus, we delet from dictionary
                     chosenImplicants.append(sharedMinterms)
                 del self.implicantToMintermTable[chosenImplicant] # Delete chosen implicant from table
-                #print(self.implicantTable)
-                #print(self.implicantToMintermTable)
+                ##print(self.implicantTable)
+                ##print(self.implicantToMintermTable)
                 i = i+1
         return
     
@@ -275,23 +277,23 @@ class QM:
         implicantList = []
         for key in self.implicantToMintermTable:
             implicantList.append(key)
-        print("Minterm List ", implicantList)
+        #print("Minterm List ", implicantList)
         for key1 in implicantList:
             for key2 in implicantList:
                 if key1 == None or key2 == None:
                     continue
-                # print(key1, key2)
-                # print(self.implicantToMintermTable.get(key1),self.implicantToMintermTable.get(key2))
+                # #print(key1, key2)
+                # #print(self.implicantToMintermTable.get(key1),self.implicantToMintermTable.get(key2))
                 if self.implicantToMintermTable.get(key1) == None or self.implicantToMintermTable.get(key2) == None:
                     continue
                 if self.implicantToMintermTable.get(key1) == self.implicantToMintermTable.get(key2):
                     continue
                 if set(self.implicantToMintermTable.get(key1)).issubset(set(self.implicantToMintermTable.get(key2))):
-                    # print("Key1 is subset of key2")
+                    # #print("Key1 is subset of key2")
                     del self.implicantToMintermTable[key1]
                     didColumnDominate = True
                 elif set(self.implicantToMintermTable.get(key2)).issubset(set(self.implicantToMintermTable.get(key1))):
-                    # print("Key2 is subset of key1")
+                    # #print("Key2 is subset of key1")
                     del self.implicantToMintermTable[key2]
                     didColumnDominate = True
         self.remakeImplicantTable()
@@ -302,136 +304,118 @@ class QM:
         mintermList = []
         for key in self.implicantTable:
             mintermList.append(key)
-        print("Minterm List ", mintermList)
+        #print("Minterm List ", mintermList)
         for key1 in mintermList:
             for key2 in mintermList:
                 if key1 == None or key2 == None:
                     continue
-                # print(key1, key2)
-                # print(self.implicantToMintermTable.get(key1),self.implicantToMintermTable.get(key2))
+                # #print(key1, key2)
+                # #print(self.implicantToMintermTable.get(key1),self.implicantToMintermTable.get(key2))
                 if self.implicantTable.get(key1) == None or self.implicantTable.get(key2) == None:
                     continue
                 if self.implicantTable.get(key1) == self.implicantTable.get(key2):
                     continue
                 if set(self.implicantTable.get(key1)).issubset(set(self.implicantTable.get(key2))):
-                    # print("Key1 is subset of key2")
+                    # #print("Key1 is subset of key2")
                     del self.implicantTable[key1]
                     didRowDominate = True
                 elif set(self.implicantTable.get(key2)).issubset(set(self.implicantTable.get(key1))):
-                    # print("Key2 is subset of key1")
+                    # #print("Key2 is subset of key1")
                     del self.implicantTable[key2]
                     didRowDominate = True
         self.remakeImplicantTable()
         return didRowDominate
         
     def doQM(self):
-        terms = self.createTable(self.inputTerms)
+        terms = self.createTable(self.onsetTerms)
         termPairs = self.tabulate(terms)
-        print(self.onsetTerms)
+        #print(self.onsetTerms)
         while True:
             terms = self.createTablePairs(termPairs)
             termPairs = self.tabulatePair(terms)
             if self.keepGoing == False:
                 break
         self.implicantTable = self.createImplicantTable()
-        print(self.implicantTable)
+        #print(self.implicantTable)
         self.implicantToMintermTable = self.createImplicantToMintermTable()
 
         while True: 
             continueQM = False
-            print("Minterms for each implicant")
-            print(self.implicantToMintermTable)
+            #print("Minterms for each implicant")
+            #print(self.implicantToMintermTable)
             self.findingEssentialPrimeImplicants()
-            print("Chosen implicants")
-            print(self.chosenImplicants)
-            print(self.implicantTable)
-            print("Remade Table")
+            #print("Chosen implicants")
+            #print(self.chosenImplicants)
+            #print(self.implicantTable)
+            #print("Remade Table")
             remadeTable = self.remakeTable()
-            print(remadeTable)
-            print("Starting Column Domination")
+            #print(remadeTable)
+            #print("Starting Column Domination")
             hasColumnDomination = self.findColumnDomination()
-            print("Implicant Table: ",self.implicantTable)
-            print("Implicant to minterm table: ", self.implicantToMintermTable)
-            print("Starting Row Domination")
+            #print("Implicant Table: ",self.implicantTable)
+            #print("Implicant to minterm table: ", self.implicantToMintermTable)
+            #print("Starting Row Domination")
             hasRowDomination = self.findRowDomination()
-            print("Implicant Table: ",self.implicantTable)
-            print("Implicant to minterm table: ", self.implicantToMintermTable)
+            #print("Implicant Table: ",self.implicantTable)
+            #print("Implicant to minterm table: ", self.implicantToMintermTable)
             if hasColumnDomination == False and hasRowDomination == False:
                 break
-        print("\n\nFinal Chosen Implicants: ")
-        print(self.chosenImplicants)
+        #print("\n\nFinal Chosen Implicants: ")
+        #print(self.chosenImplicants)
 
         #pairs = [termPair[0] for termPair in termPairs]
         #terms = [termPair[1] for termPair in termPairs]
-        # print("Term pairs")
-        # #print(termPairs)
+        # #print("Term pairs")
+        # ##print(termPairs)
         # temp2 = self.createTablePairs(termPairs)
         # temp3 = self.tabulatePair(temp2)
-        # #print(temp3)
+        # ##print(temp3)
         # temp4 = self.createTablePairs(temp3)
         # temp5 = self.tabulatePair(temp4)
         # temp6 = self.createTablePairs(temp5)
         # temp7 = self.tabulatePair(temp6)
-        #print(temp5)
-def main():
+        ##print(temp5)
 
-    qm = QM('homework1q3.pla')
+    def writeFile(self, filename):
+        f = open(filename, "w")
+        content = f".i {self.numInputs}\n"
+        f.write(content)
+        content = f".o {self.numOutputs}\n"
+        f.write(content)
+        content = f".ilb"
+        names = ""
+        for inputName in self.inputNames:
+            names = names + " " + inputName
+        content += names + "\n"
+        f.write(content)
+        content = f".ob"
+        names =""
+        for outputName in self.outputNames:
+            names = names + " " + outputName
+        content += names + "\n"
+        f.write(content)
+        for implicant in self.chosenImplicants:
+            content = implicant + " 1\n"
+            f.write(content)
+        content = f".e"
+        f.write(content)
+        f.close()
+        print("Output file written to (", filename, ")")
+
+
+def main():
+    n = len(sys.argv)
+    if n != 3:
+        print("Usage: main.py <input file path> <output file path>")
+        sys.exit(1)
+    input = sys.argv[1]
+    output = sys.argv[2]
+    qm = QM(input)
     qm.parsePLA()
-    qm.printData()
+    #qm.printData()
     qm.doQM()
+    qm.writeFile(output)
 
 if __name__ == "__main__":
     main()
 
-#f = open("adder.pla", "r")
-#
-#numberOfInput = 0
-#numberOfOutput = 0
-#nameOfInputs = []
-#nameofOutput = ""
-#
-#readValue = f.readline()
-#print("Read Value: " + readValue[0:2] + "\n")
-#if readValue[0:1] == ".i":
-#    numberOfInput = int(readValue[3])
-#    nameOfInputs = [None]*numberOfInput
-#    print("Number of inputs: " + str(numberOfInput))
-#
-#while readValue != ".e":
-#    print("Read Value: " + readValue + "\n")
-#    if readValue[0:4] == ".ilb":
-#        for x in range(0,numberOfInput):
-#            nameOfInputs[x] = readValue[2*x+5]
-#        print(nameOfInputs)
-#        readValue = f.readline()
-#        continue
-#    elif readValue[0:2] == ".i" and readValue[0:3] != ".ilb":
-#        numberOfInput = int(readValue[3])
-#        nameOfInputs = [None]*numberOfInput
-#        print("Number of inputs: " + str(numberOfInput))
-#    elif readValue[0:2] == ".o" and readValue[0:3] != ".ob":
-#        numberOfOutput = int(readValue[3])
-#        nameOfOutput = [None]*numberOfOutput
-#        print("Number of outputs: " + str(numberOfOutput))
-#    elif readValue[0:3] == ".ob":
-#        nameOfOutput = readValue[4]
-#        print("Name of output: " + str(nameOfOutput))
-#        break
-#    readValue = f.readline()
-#
-#minterms = []
-#mintermBitLength = 0
-#implicantsGrouped = [[]*1 for i in range(numberOfInput+1)]
-#while readValue != ".e":
-#    readValue = f.readline()
-#    if readValue[len(readValue)-2] == "1":
-#        minterm = readValue.split(None, 1)[0]
-#        minterms.append(minterm)
-#        mintermBitLength = len(minterm)
-#        print(minterm)
-#        hammingWeight = popcount_py(minterm)
-#        print("Number of ones:" + str(hammingWeight))
-#        implicantsGrouped[hammingWeight].append(minterm)
-#print(implicantsGrouped)
-#f.close()
-#
