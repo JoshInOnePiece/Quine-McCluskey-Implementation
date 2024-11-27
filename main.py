@@ -40,6 +40,7 @@ class QM:
         self.outputNames = []
         self.inputTerms = []
         self.onsetTerms = []
+        self.dontCareTerms = []
         self.outputTerms = []
         self.numInputs = 0
         self.numOutputs = 0
@@ -75,9 +76,10 @@ class QM:
         for line in terms:
             inputTerm = line[0]
             outputTerm = line[1]
-            if outputTerm == '1' or outputTerm =='-':
+            if outputTerm == '1': # or outputTerm =='-':
                 self.onsetTerms.append(inputTerm)
-                self.termsDecimal.append(int(inputTerm, 2))
+            if outputTerm == '-':
+                self.dontCareTerms.append(inputTerm)
             self.inputTerms.append(inputTerm)
             self.outputTerms.append(outputTerm)
     
@@ -113,8 +115,8 @@ class QM:
         print(self.inputTerms)
         print("Output Terms: ")
         print(self.outputTerms)
-        print("Decimal Terms")
-        print(self.termsDecimal)
+        #print("Decimal Terms")
+        #print(self.termsDecimal)
 
     def tabulate(self, list):
         """Perform the tabulate step on 'list', which should be a list of lists, where sublist in list at position n has all items with n 1's"""
@@ -326,8 +328,8 @@ class QM:
         self.remakeImplicantTable()
         return didRowDominate
         
-    def doQM(self):
-        terms = self.createTable(self.onsetTerms)
+    def doQM(self, listIn):
+        terms = self.createTable(listIn)
         termPairs = self.tabulate(terms)
         #print(self.onsetTerms)
         while True:
@@ -362,7 +364,7 @@ class QM:
                 break
         #print("\n\nFinal Chosen Implicants: ")
         #print(self.chosenImplicants)
-
+        return self.chosenImplicants
         #pairs = [termPair[0] for termPair in termPairs]
         #terms = [termPair[1] for termPair in termPairs]
         # #print("Term pairs")
@@ -394,6 +396,9 @@ class QM:
             names = names + " " + outputName
         content += names + "\n"
         f.write(content)
+
+        content = f".p " + str(len(self.chosenImplicants)) + "\n"
+        f.write(content)
         for implicant in self.chosenImplicants:
             content = implicant + " 1\n"
             f.write(content)
@@ -401,6 +406,9 @@ class QM:
         f.write(content)
         f.close()
         print("Output file written to (", filename, ")")
+
+    def getNumTerms(self):
+        return len(self.chosenImplicants)
 
 
 def main():
@@ -413,7 +421,7 @@ def main():
     qm = QM(input)
     qm.parsePLA()
     #qm.printData()
-    qm.doQM()
+    qm.doQM(qm.onsetTerms)
     qm.writeFile(output)
 
 if __name__ == "__main__":
