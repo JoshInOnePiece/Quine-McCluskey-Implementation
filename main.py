@@ -47,6 +47,8 @@ class QM:
         self.implicantToMintermTable = {}
         self.keepGoing = False
         self.chosenImplicants = []
+        self.termsDecimal = []
+        self.covered = []
 
 
     def parsePLA(self):
@@ -67,11 +69,13 @@ class QM:
 
         terms = [line.strip().split() for line in lines if re.match(r'^[01-]+\s+[01-]+$', line)]
 
+
         for line in terms:
             inputTerm = line[0]
             outputTerm = line[1]
             if outputTerm == '1':
                 self.onsetTerms.append(inputTerm)
+                self.termsDecimal.append(int(inputTerm, 2))
             self.inputTerms.append(inputTerm)
             self.outputTerms.append(outputTerm)
     
@@ -107,6 +111,8 @@ class QM:
         print(self.inputTerms)
         print("Output Terms: ")
         print(self.outputTerms)
+        print("Decimal Terms")
+        print(self.termsDecimal)
 
     def tabulate(self, list):
         """Perform the tabulate step on 'list', which should be a list of lists, where sublist in list at position n has all items with n 1's"""
@@ -329,6 +335,7 @@ def main():
 
     qm = QM('onlineExample1.pla')
     qm.parsePLA()
+    qm.printData()
     qm.doQM()
 
 if __name__ == "__main__":
