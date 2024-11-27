@@ -214,8 +214,28 @@ class QM:
             remadeTable[implicant] += mintermList
                     
         print("Implicant List", implicantList)
+        self.implicantToMintermTable = remadeTable
         return remadeTable
     
+    def remakeImplicantTable(self):
+        remadeTable = {}
+        mintermSet = set()
+        for value in self.implicantToMintermTable.values():
+            mintermSet.update(value)
+        mintermList = list(mintermSet)
+        implicantList = []
+        for minterm in mintermList:
+            implicantList.clear()
+            remadeTable[minterm] = []
+            for implicant in self.implicantToMintermTable:
+                if validImplicant(minterm, implicant):
+                    implicantList.append(implicant)
+            remadeTable[minterm] += implicantList
+                    
+        print("Minterm List", mintermList)
+        self.implicantTable = remadeTable
+        return remadeTable
+
     def findingEssentialPrimeImplicants(self):
         chosenImplicants = []
         i = 1
@@ -240,7 +260,33 @@ class QM:
                 #print(self.implicantToMintermTable)
                 i = i+1
         return
-
+    
+    def findColumnDomination(self):
+        didColumnDominate = False
+        implicantList = []
+        for key in self.implicantToMintermTable:
+            implicantList.append(key)
+        print("Minterm List ", implicantList)
+        for key1 in implicantList:
+            for key2 in implicantList:
+                if key1 == None or key2 == None:
+                    continue
+                # print(key1, key2)
+                # print(self.implicantToMintermTable.get(key1),self.implicantToMintermTable.get(key2))
+                if self.implicantToMintermTable.get(key1) == None or self.implicantToMintermTable.get(key2) == None:
+                    continue
+                if self.implicantToMintermTable.get(key1) == self.implicantToMintermTable.get(key2):
+                    continue
+                if set(self.implicantToMintermTable.get(key1)).issubset(set(self.implicantToMintermTable.get(key2))):
+                    # print("Key1 is subset of key2")
+                    del self.implicantToMintermTable[key1]
+                    didColumnDominate = True
+                elif set(self.implicantToMintermTable.get(key2)).issubset(set(self.implicantToMintermTable.get(key1))):
+                    # print("Key2 is subset of key1")
+                    del self.implicantToMintermTable[key2]
+                    didColumnDominate = True
+        self.remakeImplicantTable()
+        
     def doQM(self):
         terms = self.createTable(self.inputTerms)
         termPairs = self.tabulate(terms)
@@ -262,6 +308,10 @@ class QM:
         print("Remade Table")
         remadeTable = self.remakeTable()
         print(remadeTable)
+        print("Starting Column Domination")
+        self.findColumnDomination()
+        print("Implicant Table: ",self.implicantTable)
+        print("Implicant to minterm table: ", self.implicantToMintermTable)
 
         #pairs = [termPair[0] for termPair in termPairs]
         #terms = [termPair[1] for termPair in termPairs]
