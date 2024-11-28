@@ -125,14 +125,31 @@ class QM:
         terms = []
         usedTerms = set()
         self.keepGoing = False
-        for x in range(0, len(list) - 1):#iterating over sublists, do not check last list
+        usedLast = False
+        print(list)
+        listLen = len(list)
+        for x in range(0, listLen - 1):#iterating over sublists, do not check last list
+            print(x)
+            if (x == (listLen - 2)):
+                if not usedLast:
+                    print(list[-1][-1])
+                    pair = (int(list[-1][-1],2), int(list[-1][-1],2))
+                    combine = (pair,list[-1][-1])
+                    usedTerms.add(list[-1][-1])
+                    terms.append(combine)
+                else:
+                    self.unUsedTerms.add(list[-1][-1])
+                break
             for y in range(0, len(list[x])):#iterating over string in sublist
                 # x[y] is now the current string being checked
                 currList = list[x]
                 currString = currList[y]
+                
                 nextList = list[x+1]
                 for z in range(0, len(nextList)):
                     if diffByOne(currString, nextList[z]):
+                        if (x == (listLen+2)):
+                            usedLast = True
                         self.keepGoing = True
                         usedTerms.add(currString)
                         usedTerms.add(nextList[z])
@@ -145,6 +162,7 @@ class QM:
                     self.unUsedTerms.add(currString)
         #print(self.unUsedTerms)
         ##print(terms)
+        print(terms)
         return terms
 
     def tabulatePair(self, list):
@@ -339,33 +357,34 @@ class QM:
             termPairs = self.tabulatePair(terms)
             if self.keepGoing == False:
                 break
+        
         self.implicantTable = self.createImplicantTable()
-        #print(self.implicantTable)
+        print(self.implicantTable)
         self.implicantToMintermTable = self.createImplicantToMintermTable()
 
         while True: 
             continueQM = False
-            #print("Minterms for each implicant")
-            #print(self.implicantToMintermTable)
+            print("Minterms for each implicant")
+            print(self.implicantToMintermTable)
             self.findingEssentialPrimeImplicants()
-            #print("Chosen implicants")
-            #print(self.chosenImplicants)
+            print("Chosen implicants")
+            print(self.chosenImplicants)
             #print(self.implicantTable)
-            #print("Remade Table")
+            print("Remade Table")
             remadeTable = self.remakeTable()
-            #print(remadeTable)
+            print(remadeTable)
             #print("Starting Column Domination")
             hasColumnDomination = self.findColumnDomination()
-            #print("Implicant Table: ",self.implicantTable)
-            #print("Implicant to minterm table: ", self.implicantToMintermTable)
+            print("Implicant Table: ",self.implicantTable)
+            print("Implicant to minterm table: ", self.implicantToMintermTable)
             #print("Starting Row Domination")
             hasRowDomination = self.findRowDomination()
             #print("Implicant Table: ",self.implicantTable)
             #print("Implicant to minterm table: ", self.implicantToMintermTable)
             if hasColumnDomination == False and hasRowDomination == False:
                 break
-        #print("\n\nFinal Chosen Implicants: ")
-        #print(self.chosenImplicants)
+        print("\n\nFinal Chosen Implicants: ")
+        print(self.chosenImplicants)
         return self.chosenImplicants
         #pairs = [termPair[0] for termPair in termPairs]
         #terms = [termPair[1] for termPair in termPairs]
