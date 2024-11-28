@@ -330,8 +330,8 @@ class QM:
         self.remakeImplicantTable()
         return didRowDominate
         
-    def doQM(self, listIn):
-        terms = self.createTable(listIn)
+    def doQM(self):#, listIn):
+        terms = self.createTable(self.onsetTerms + self.dontCareTerms)
         termPairs = self.tabulate(terms)
         #print(self.onsetTerms)
         while True:
@@ -421,15 +421,28 @@ def findBestQMTerms(filename):
     combinationsDC = []
     for r in range(len(dcSet) + 1):  # r is the length of each combination
         combinationsDC.extend(combinations(dcSet, r))
-    print(combinationsDC)
+    #print(combinationsDC)
     numberOfTermsPerCombination = []
-    for termsToAdd in combinationsDC:
-        combined = onSet + termsToAdd
+    terms = []
+    for termsToAdd in list(combinationsDC):
+        combined = onSet
+        for term in list(termsToAdd):
+            combined.append(term)
+        #combined += termsToAdd
+        print("comibined ", combined)
         qmCopy = copy.copy(qm)
         results = qmCopy.doQM(combined)
+        terms.append(combined)
         numberOfTermsPerCombination.append(len(results))
-
-
+    idx = 0
+    min = numberOfTermsPerCombination[0]
+    for i in range(0, len(terms)):
+        if numberOfTermsPerCombination[i] < min and numberOfTermsPerCombination[i] != 0:
+            idx = i
+            min = numberOfTermsPerCombination[i]
+    #print("terms")
+    #print(terms)
+    return terms[idx]
 
 
 def main():
@@ -439,13 +452,13 @@ def main():
         sys.exit(1)
     input = sys.argv[1]
     output = sys.argv[2]
-
-    findBestQMTerms(input)
+    
+    #result = findBestQMTerms(input)
 
     qm = QM(input)
     qm.parsePLA()
     #qm.printData()
-    qm.doQM(qm.onsetTerms)
+    qm.doQM()
     qm.writeFile(output)
 
 if __name__ == "__main__":
