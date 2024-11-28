@@ -150,7 +150,7 @@ class QM:
                 for z in range(0, len(nextList)):
                     if diffByOne(currString, nextList[z]):
                         if (x == (listLen-2)):
-                            print("YESAY")
+                            #print("YESAY")
                             usedLast = True
                         self.keepGoing = True
                         usedTerms.add(currString)
@@ -204,7 +204,7 @@ class QM:
                         ###print("diff")
                         #pair = (int(currString, 2), int(nextList[z], 2))
                         if (x == (listLen-2)):
-                            print("YESY")
+                            #print("YESY")
                             usedLast = True
                         self.keepGoing = True
                         pair = currList[y][0] + nextList[z][0]
@@ -225,7 +225,7 @@ class QM:
         for minterm in self.onsetTerms:
             implicantsForEachMinterm.clear()
             implicantTable[minterm] = []
-            print(self.unUsedTerms)
+            #print(self.unUsedTerms)
             for implicant in self.unUsedTerms:
                 #valid = validImplicant(minterm,implicant)
                 #print("implicant")
