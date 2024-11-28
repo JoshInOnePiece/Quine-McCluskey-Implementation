@@ -131,8 +131,8 @@ class QM:
         listLen = len(list)
         for x in range(0, listLen - 1):#iterating over sublists, do not check last list
             ##print(x)
-            if (x == (listLen - 2)):
-                if usedLast and len(list) > 0 and len(list[-1]) > 0:
+            if (x == (listLen - 1)):
+                if not usedLast and len(list) > 0 and len(list[-1]) > 0:
                     ##print(list[-1][0])
                     pair = (int(list[-1][-1],2), int(list[-1][-1],2))
                     combine = (pair,list[-1][-1])
@@ -149,7 +149,8 @@ class QM:
                 nextList = list[x+1]
                 for z in range(0, len(nextList)):
                     if diffByOne(currString, nextList[z]):
-                        if (x == (listLen+2)):
+                        if (x == (listLen-2)):
+                            print("YESAY")
                             usedLast = True
                         self.keepGoing = True
                         usedTerms.add(currString)
@@ -173,9 +174,9 @@ class QM:
         self.keepGoing = False
         usedLast = False
         listLen = len(list)
-        for x in range(0, len(list) - 1):#iterating over sublists, do not check last list
-            if (x == (listLen - 2)):
-                if usedLast and len(list) > 0 and len(list[-1]) > 0:
+        for x in range(0, len(list)-1):#iterating over sublists, do not check last list
+            if (x == (listLen - 1)):
+                if not usedLast and len(list) > 0 and len(list[-1]) > 0:
                     ##print(list[-1][0])
                     item = list[-1][-1][1]
                     ##print("item")
@@ -202,7 +203,8 @@ class QM:
                     if diffByOne(currString, nextList[z][1]):
                         ###print("diff")
                         #pair = (int(currString, 2), int(nextList[z], 2))
-                        if (x == (listLen+2)):
+                        if (x == (listLen-2)):
+                            print("YESY")
                             usedLast = True
                         self.keepGoing = True
                         pair = currList[y][0] + nextList[z][0]
@@ -223,6 +225,7 @@ class QM:
         for minterm in self.onsetTerms:
             implicantsForEachMinterm.clear()
             implicantTable[minterm] = []
+            print(self.unUsedTerms)
             for implicant in self.unUsedTerms:
                 #valid = validImplicant(minterm,implicant)
                 #print("implicant")
@@ -373,13 +376,14 @@ class QM:
         
     def doQM(self):#, listIn):
         terms = self.createTable(self.onsetTerms + self.dontCareTerms)
+        #print(terms)
         termPairs = self.tabulate(terms)
-        ##print(self.onsetTerms)
+        #print(termPairs)
         while True:
             terms = self.createTablePairs(termPairs)
             termPairs = self.tabulatePair(terms)
             #print("terms")
-            #print(termPairs)
+            #print(terms)
             if self.keepGoing == False:
                 break
         #print(self.unUsedTerms)
