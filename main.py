@@ -131,13 +131,13 @@ class QM:
         for x in range(0, listLen - 1):#iterating over sublists, do not check last list
             print(x)
             if (x == (listLen - 2)):
-                if not usedLast:
-                    print(list[-1][-1])
+                if not usedLast and len(list) > 0 and len(list[-1]) > 0:
+                    print(list[-1][0])
                     pair = (int(list[-1][-1],2), int(list[-1][-1],2))
                     combine = (pair,list[-1][-1])
                     usedTerms.add(list[-1][-1])
                     terms.append(combine)
-                else:
+                elif len(list) > 0 and len(list[-1]) > 0:
                     self.unUsedTerms.add(list[-1][-1])
                 break
             for y in range(0, len(list[x])):#iterating over string in sublist
