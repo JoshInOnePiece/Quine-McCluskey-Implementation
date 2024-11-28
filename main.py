@@ -126,13 +126,13 @@ class QM:
         usedTerms = set()
         self.keepGoing = False
         usedLast = False
-        print(list)
+        #print(list)
         listLen = len(list)
         for x in range(0, listLen - 1):#iterating over sublists, do not check last list
-            print(x)
+            #print(x)
             if (x == (listLen - 2)):
-                if not usedLast and len(list) > 0 and len(list[-1]) > 0:
-                    print(list[-1][0])
+                if usedLast and len(list) > 0 and len(list[-1]) > 0:
+                    #print(list[-1][0])
                     pair = (int(list[-1][-1],2), int(list[-1][-1],2))
                     combine = (pair,list[-1][-1])
                     usedTerms.add(list[-1][-1])
@@ -170,7 +170,25 @@ class QM:
         terms = []
         usedTerms = set()
         self.keepGoing = False
+        usedLast = False
+        listLen = len(list)
         for x in range(0, len(list) - 1):#iterating over sublists, do not check last list
+            if (x == (listLen - 2)):
+                if usedLast and len(list) > 0 and len(list[-1]) > 0:
+                    #print(list[-1][0])
+                    item = list[-1][-1][1]
+                    #print("item")
+                    #print(item)
+                    print("yes")
+                    pair = (int(item,2), int(item,2))
+                    combine = (pair,item)
+                    usedTerms.add(item)
+                    terms.append(combine)
+                elif len(list) > 0 and len(list[-1]) > 0:
+                    print("no")
+                    item = list[-1][-1][1]
+                    self.unUsedTerms.add(item)
+                break
             for y in range(0, len(list[x])):#iterating over string in sublist
                 # x[y] is now the current string being checked
                 currList = list[x]
@@ -183,6 +201,8 @@ class QM:
                     if diffByOne(currString, nextList[z][1]):
                         ##print("diff")
                         #pair = (int(currString, 2), int(nextList[z], 2))
+                        if (x == (listLen+2)):
+                            usedLast = True
                         self.keepGoing = True
                         pair = currList[y][0] + nextList[z][0]
                         combined = (pair,findDiff(currString, nextList[z][1]))
@@ -204,6 +224,8 @@ class QM:
             implicantTable[minterm] = []
             for implicant in self.unUsedTerms:
                 #valid = validImplicant(minterm,implicant)
+                print("implicant")
+                print(implicant)
                 if(validImplicant(minterm,implicant)):
                     # #print(minterm,implicant, end=" ")
                     # #print(valid)
@@ -355,9 +377,11 @@ class QM:
         while True:
             terms = self.createTablePairs(termPairs)
             termPairs = self.tabulatePair(terms)
+            print("terms")
+            print(termPairs)
             if self.keepGoing == False:
                 break
-        
+        print(self.unUsedTerms)
         self.implicantTable = self.createImplicantTable()
         print(self.implicantTable)
         self.implicantToMintermTable = self.createImplicantToMintermTable()
