@@ -129,17 +129,18 @@ class QM:
         usedLast = False
         ##print(list)
         listLen = len(list)
-        for x in range(0, listLen - 1):#iterating over sublists, do not check last list
+        for x in range(0, listLen):#iterating over sublists, do not check last list
             ##print(x)
             if (x == (listLen - 1)):
+                print(usedLast)
                 if not usedLast and len(list) > 0 and len(list[-1]) > 0:
                     ##print(list[-1][0])
                     pair = (int(list[-1][-1],2), int(list[-1][-1],2))
                     combine = (pair,list[-1][-1])
-                    usedTerms.add(list[-1][-1])
+                    self.unUsedTerms.add(list[-1][-1])
                     terms.append(combine)
                 elif len(list) > 0 and len(list[-1]) > 0:
-                    self.unUsedTerms.add(list[-1][-1])
+                    usedTerms.add(list[-1][-1])
                 break
             for y in range(0, len(list[x])):#iterating over string in sublist
                 # x[y] is now the current string being checked
@@ -174,7 +175,7 @@ class QM:
         self.keepGoing = False
         usedLast = False
         listLen = len(list)
-        for x in range(0, len(list)-1):#iterating over sublists, do not check last list
+        for x in range(0, len(list)):#iterating over sublists, do not check last list
             if (x == (listLen - 1)):
                 if not usedLast and len(list) > 0 and len(list[-1]) > 0:
                     ##print(list[-1][0])
@@ -184,12 +185,12 @@ class QM:
                     #print("yes")
                     pair = (int(item,2), int(item,2))
                     combine = (pair,item)
-                    usedTerms.add(item)
+                    self.unUsedTerms.add(item)
                     terms.append(combine)
                 elif len(list) > 0 and len(list[-1]) > 0:
                     #print("no")
                     item = list[-1][-1][1]
-                    self.unUsedTerms.add(item)
+                    usedTerms.add(item)
                 break
             for y in range(0, len(list[x])):#iterating over string in sublist
                 # x[y] is now the current string being checked
@@ -376,19 +377,19 @@ class QM:
         
     def doQM(self):#, listIn):
         terms = self.createTable(self.onsetTerms + self.dontCareTerms)
-        #print(terms)
+        print(terms)
         termPairs = self.tabulate(terms)
-        #print(termPairs)
+        print(termPairs)
         while True:
             terms = self.createTablePairs(termPairs)
             termPairs = self.tabulatePair(terms)
-            #print("terms")
-            #print(terms)
+            print("terms")
+            print(terms)
             if self.keepGoing == False:
                 break
-        #print(self.unUsedTerms)
+        print(self.unUsedTerms)
         self.implicantTable = self.createImplicantTable()
-        #print(self.implicantTable)
+        print("Implicant Table: ", self.implicantTable)
         self.implicantToMintermTable = self.createImplicantToMintermTable()
 
         while True: 
