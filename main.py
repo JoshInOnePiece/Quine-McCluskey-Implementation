@@ -132,7 +132,7 @@ class QM:
         for x in range(0, listLen):#iterating over sublists, do not check last list
             ##print(x)
             if (x == (listLen - 1)):
-                print(usedLast)
+                #print(usedLast)
                 if not usedLast and len(list) > 0 and len(list[-1]) > 0:
                     ##print(list[-1][0])
                     pair = (int(list[-1][-1],2), int(list[-1][-1],2))
@@ -377,19 +377,19 @@ class QM:
         
     def doQM(self):#, listIn):
         terms = self.createTable(self.onsetTerms + self.dontCareTerms)
-        print(terms)
+        #print(terms)
         termPairs = self.tabulate(terms)
-        print(termPairs)
+        #print(termPairs)
         while True:
             terms = self.createTablePairs(termPairs)
             termPairs = self.tabulatePair(terms)
-            print("terms")
-            print(terms)
+            #print("terms")
+            #print(terms)
             if self.keepGoing == False:
                 break
-        print(self.unUsedTerms)
+        #print(self.unUsedTerms)
         self.implicantTable = self.createImplicantTable()
-        print("Implicant Table: ", self.implicantTable)
+        #print("Implicant Table: ", self.implicantTable)
         self.implicantToMintermTable = self.createImplicantToMintermTable()
 
         while True: 
