@@ -401,7 +401,7 @@ class QM:
             #print(self.chosenImplicants)
             ##print(self.implicantTable)
             #print("Remade Table")
-            #remadeTable = self.remakeTable()
+            remadeTable = self.remakeTable()
             #print(remadeTable)
             ##print("Starting Column Domination")
             hasColumnDomination = self.findColumnDomination()
