@@ -366,13 +366,13 @@ class QM:
                     continue
                 if set(self.implicantTable.get(key1)).issubset(set(self.implicantTable.get(key2))):
                     # ##print("Key1 is subset of key2")
-                    del self.implicantTable[key1]
+                    del self.implicantTable[key2]
                     didRowDominate = True
                 elif set(self.implicantTable.get(key2)).issubset(set(self.implicantTable.get(key1))):
                     # ##print("Key2 is subset of key1")
-                    del self.implicantTable[key2]
+                    del self.implicantTable[key1]
                     didRowDominate = True
-        self.remakeImplicantTable()
+        self.remakeTable()
         return didRowDominate
         
     def doQM(self):#, listIn):
@@ -401,7 +401,7 @@ class QM:
             #print(self.chosenImplicants)
             ##print(self.implicantTable)
             #print("Remade Table")
-            remadeTable = self.remakeTable()
+            #remadeTable = self.remakeTable()
             #print(remadeTable)
             ##print("Starting Column Domination")
             hasColumnDomination = self.findColumnDomination()
